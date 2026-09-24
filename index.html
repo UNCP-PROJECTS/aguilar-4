@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guía Práctica 04 - UNCP FIS: Banco de Pruebas Cinemático con Canvas 2D, Closures, Event Loop y Rendimiento">
+  <title>UNCP FIS — Práctica Semana 04 | Canvas 2D Physics Workbench</title>
+  
+  <!-- Tipografía técnica institucional -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Hoja de estilos de ingeniería (Cero inline styles - DreamDesign) -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Paso 1: Carga diferida obligatoria mediante atributo defer -->
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <!-- Barra de Navegación Institucional (Header de Instrumento Técnico) -->
+  <header class="top-nav">
+    <div class="nav-container">
+      <div class="brand-group">
+        <div class="brand-symbol" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+            <line x1="6" y1="6" x2="6.01" y2="6"/>
+            <line x1="6" y1="18" x2="6.01" y2="18"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <span class="brand-kicker">UNCP • FACULTAD DE INGENIERÍA DE SISTEMAS</span>
+          <h1 class="brand-title">Canvas 2D Physics Workbench <span class="version-tag">v4.0</span></h1>
+        </div>
+      </div>
+      
+      <div class="nav-actions">
+        <!-- Crédito de autoría directa a GitHub (DreamDesign) -->
+        <a href="https://github.com/StoneFind22" target="_blank" rel="noopener noreferrer" class="author-credits" title="Autor: José Pablo Osorio Mallqui (@StoneFind22) — UNCP FIS">
+          <span class="monogram-badge">JO</span>
+          <span class="author-name">José Osorio</span>
+          <span class="author-github-tag">@StoneFind22</span>
+          <svg class="author-external-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+
+        <div class="status-indicator-wrap" id="engineStatusBadge">
+          <span class="status-pip"></span>
+          <span class="status-label" id="engineStatusText">MOTOR EN EJECUCIÓN</span>
+        </div>
+
+        <button id="themeToggleBtn" class="btn btn-secondary btn-icon" title="Alternar tema de contraste de laboratorio" aria-label="Alternar tema visual">
+          <svg class="icon-theme" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+          <span class="btn-text">Tema</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout Principal de Trabajo (Consola Técnica Grid) -->
+  <main class="workbench-layout">
+    
+    <!-- Panel Izquierdo: Rack de Parámetros y Calibración -->
+    <aside class="panel controls-panel" aria-label="Panel de instrumentación física y parámetros">
+      <div class="panel-header">
+        <h2 class="panel-title">Parámetros de Simulación</h2>
+        <span class="panel-subtitle">Calibración reactiva del estado interno (Closure)</span>
+      </div>
+
+      <form id="simulationForm" class="controls-form" novalidate>
+        
+        <!-- Grupo 1: Dinámica de Partículas -->
+        <fieldset class="control-group">
+          <legend class="group-legend">Variables Cinemáticas</legend>
+          
+          <!-- Cantidad de Partículas -->
+          <div class="input-field">
+            <div class="field-header">
+              <label for="particleCountInput">Densidad de Muestra (N)</label>
+              <span class="value-display" id="particleCountVal">120</span>
+            </div>
+            <div class="input-range-wrap">
+              <input type="range" id="particleCountInput" name="particleCount" min="10" max="400" step="5" value="120" class="range-slider">
+              <input type="number" id="particleCountNumber" min="10" max="400" step="5" value="120" class="number-input" aria-label="Cantidad de partículas numérico">
+            </div>
+            <span class="field-hint">Rango: [10 - 400] partículas simultáneas</span>
+            <div class="field-error" id="particleCountError" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- Velocidad Base -->
+          <div class="input-field">
+            <div class="field-header">
+              <label for="baseSpeedInput">Velocidad Escalar Base</label>
+              <span class="value-display" id="baseSpeedVal">90</span>
+            </div>
+            <div class="input-range-wrap">
+              <input type="range" id="baseSpeedInput" name="baseSpeed" min="10" max="300" step="5" value="90" class="range-slider">
+              <input type="number" id="baseSpeedNumber" min="10" max="300" step="5" value="90" class="number-input" aria-label="Velocidad base numérica">
+            </div>
+            <span class="field-hint">Multiplicador vectorial en px/s integrado con dt</span>
+          </div>
+
+          <!-- Radio de Partícula -->
+          <div class="input-field">
+            <div class="field-header">
+              <label for="particleRadiusInput">Radio Máximo (r)</label>
+              <span class="value-display" id="particleRadiusVal">4</span>
+            </div>
+            <div class="input-range-wrap">
+              <input type="range" id="particleRadiusInput" name="particleRadius" min="1" max="12" step="1" value="4" class="range-slider">
+              <input type="number" id="particleRadiusNumber" min="1" max="12" step="1" value="4" class="number-input" aria-label="Radio de partícula numérico">
+            </div>
+            <span class="field-hint">Dibujado con primitiva ctx.arc() en px</span>
+          </div>
+
+          <!-- Distancia de Enlace Constelación -->
+          <div class="input-field">
+            <div class="field-header">
+              <label for="connectionDistInput">Umbral de Proximidad (d)</label>
+              <span class="value-display" id="connectionDistVal">110</span>
+            </div>
+            <div class="input-range-wrap">
+              <input type="range" id="connectionDistInput" name="connectionDist" min="0" max="220" step="5" value="110" class="range-slider">
+              <input type="number" id="connectionDistNumber" min="0" max="220" step="5" value="110" class="number-input" aria-label="Distancia de proximidad numérica">
+            </div>
+            <span class="field-hint">Complejidad O(N²/2) con descarte d² &lt; r²</span>
+          </div>
+
+          <!-- Tasa de Render FPS (Canvas Throttling) -->
+          <div class="input-field">
+            <div class="field-header">
+              <label for="renderFpsInput">Tasa de Render FPS (Canvas)</label>
+              <span class="value-display" id="renderFpsVal">60 FPS</span>
+            </div>
+            <div class="input-range-wrap">
+              <input type="range" id="renderFpsInput" name="renderFps" min="15" max="144" step="1" value="60" class="range-slider">
+              <input type="number" id="renderFpsNumber" min="15" max="144" step="1" value="60" class="number-input" aria-label="Límite de render FPS numérico">
+            </div>
+            <span class="field-hint">Control de dibujo visual en pantalla: [15 FPS - 144 FPS]</span>
+          </div>
+
+          <!-- Frecuencia de Física / Sync (hasta 1 kHz) -->
+          <div class="input-field">
+            <div class="field-header">
+              <label for="refreshRateInput">Frecuencia Física / Sync</label>
+              <span class="value-display" id="refreshRateVal">60 Hz</span>
+            </div>
+            <div class="input-range-wrap">
+              <input type="range" id="refreshRateInput" name="refreshRate" min="15" max="1000" step="5" value="60" class="range-slider">
+              <input type="number" id="refreshRateNumber" min="15" max="1000" step="5" value="60" class="number-input" aria-label="Frecuencia física en Hz">
+            </div>
+            <span class="field-hint">Sincronización cinemática con substepping: [15 Hz - 1 kHz]</span>
+          </div>
+        </fieldset>
+
+        <!-- Grupo 2: Interruptores de Comportamiento Físico -->
+        <fieldset class="control-group">
+          <legend class="group-legend">Fuerzas & Render</legend>
+          
+          <div class="toggle-field">
+            <label class="toggle-label" for="connectParticlesToggle">
+              <input type="checkbox" id="connectParticlesToggle" name="connectParticles" class="toggle-checkbox" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Enlaces Vectoriales (Constelación)</span>
+            </label>
+          </div>
+
+          <div class="toggle-field">
+            <label class="toggle-label" for="mouseRepelToggle">
+              <input type="checkbox" id="mouseRepelToggle" name="mouseRepel" class="toggle-checkbox" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Fuerza de Repulsión de Puntero</span>
+            </label>
+          </div>
+
+          <div class="toggle-field">
+            <label class="toggle-label" for="gravityToggle">
+              <input type="checkbox" id="gravityToggle" name="gravity" class="toggle-checkbox">
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Aceleración Gravitacional Vertical</span>
+            </label>
+          </div>
+
+          <div class="toggle-field">
+            <label class="toggle-label" for="colorCycleToggle">
+              <input type="checkbox" id="colorCycleToggle" name="colorCycle" class="toggle-checkbox" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Modulación Espectral de Color</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Botonera de Instrumentación (Sin Emojis, SVGs sobrios de ingeniería) -->
+        <div class="actions-group">
+          <button type="button" id="togglePlayBtn" class="btn btn-primary">
+            <span id="playIcon" class="btn-icon-svg" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+              </svg>
+            </span>
+            <span id="playText">Pausar Motor</span>
+          </button>
+          
+          <button type="button" id="resetBtn" class="btn btn-secondary">
+            <span class="btn-icon-svg" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+                <path d="M21 3v5h-5"/>
+              </svg>
+            </span>
+            <span>Reiniciar Estado</span>
+          </button>
+          
+          <button type="button" id="clearBtn" class="btn btn-secondary">
+            <span class="btn-icon-svg" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m4.9 4.9 14.2 14.2"/>
+              </svg>
+            </span>
+            <span>Purgar Partículas</span>
+          </button>
+          
+          <button type="button" id="exportPngBtn" class="btn btn-secondary" title="Exportar snapshot del canvas a PNG">
+            <span class="btn-icon-svg" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </span>
+            <span>Exportar Snapshot PNG</span>
+          </button>
+
+          <button type="button" id="profileBtn" class="btn btn-tech" title="Ejecutar análisis en DevTools Console">
+            <span class="btn-icon-svg" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5"/>
+                <line x1="12" y1="19" x2="20" y2="19"/>
+              </svg>
+            </span>
+            <span>Ejecutar Console Profiler</span>
+          </button>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Panel Derecho: Lienzo de Medición e Instrumentación Telemétrica -->
+    <section class="panel stage-panel" aria-label="Lienzo de medición y telemetría en tiempo real">
+      
+      <!-- Telemetría de Laboratorio (Hardware / V8 Engine Monitor) -->
+      <div class="telemetry-rack">
+        <div class="telemetry-cell" id="fpsCard">
+          <span class="cell-label">RENDER_FPS</span>
+          <span class="cell-data" id="fpsDisplay">--</span>
+          <span class="cell-sub">Dibujo Canvas</span>
+        </div>
+
+        <div class="telemetry-cell" id="physicsCard">
+          <span class="cell-label">PHYSICS_TICK</span>
+          <span class="cell-data" id="physicsHzDisplay">--</span>
+          <span class="cell-sub">Frecuencia Física</span>
+        </div>
+        
+        <div class="telemetry-cell">
+          <span class="cell-label">DELTA_TIME</span>
+          <span class="cell-data" id="dtDisplay">0.0 ms</span>
+          <span class="cell-sub">dt normalizado</span>
+        </div>
+
+        <div class="telemetry-cell">
+          <span class="cell-label">PARTICLES_LIVE</span>
+          <span class="cell-data" id="particleCountDisplay">0</span>
+          <span class="cell-sub">Entidades en Heap</span>
+        </div>
+
+        <div class="telemetry-cell" id="memCard">
+          <span class="cell-label">HEAP_V8</span>
+          <span class="cell-data" id="memDisplay">N/D</span>
+          <span class="cell-sub">Memoria usada</span>
+        </div>
+
+        <div class="telemetry-cell">
+          <span class="cell-label">REFRESH_SYNC</span>
+          <span class="cell-data" id="refreshRateDisplay">60 Hz</span>
+          <span class="cell-sub" id="refreshRateSub">rAF Display Sync</span>
+        </div>
+      </div>
+
+      <!-- Viewport del Canvas (Con retículas de medición técnica) -->
+      <div class="canvas-viewport" id="canvasViewport">
+        <div class="viewport-reticle-tl" aria-hidden="true"></div>
+        <div class="viewport-reticle-br" aria-hidden="true"></div>
+        
+        <canvas id="simulationCanvas" class="simulation-canvas" role="img" aria-label="Banco cinemático interactivo de partículas en Canvas 2D"></canvas>
+        
+        <!-- Notificación Toast Minimalista de Estado -->
+        <div id="toastNotification" class="toast-notification" role="status" aria-live="polite"></div>
+      </div>
+
+      <!-- Resumen de Principios Técnicos y Arquitectura -->
+      <footer class="tech-dossier">
+        <div class="dossier-card">
+          <span class="dossier-index">SEC_01</span>
+          <h3 class="dossier-title">Lexical Scope & Closures</h3>
+          <p class="dossier-text">
+            El estado de simulación está encapsulado en el closure de <code>createParticleEngine()</code>. Ninguna variable se publica en <code>window</code>; los métodos retornados retienen el entorno léxico en memoria Heap entre sucesivos ticks de reloj.
+          </p>
+        </div>
+        
+        <div class="dossier-card">
+          <span class="dossier-index">SEC_02</span>
+          <h3 class="dossier-title">Event Loop & Delta Time</h3>
+          <p class="dossier-text">
+            El loop corre en <code>requestAnimationFrame</code> desacoplado de la tasa de refresco mediante integración $\Delta t$. Se previene la saturación del Event Loop y se garantiza cinemática uniforme a 60, 120 o 144 Hz.
+          </p>
+        </div>
+
+        <div class="dossier-card">
+          <span class="dossier-index">SEC_03</span>
+          <h3 class="dossier-title">DOM API & Anti-Reflow</h3>
+          <p class="dossier-text">
+            Gestión de estados estrictamente basada en <code>classList.toggle()</code> y CSS Custom Properties. Cero asignaciones directas de <code>element.style</code>, erradicando el <em>layout thrashing</em>.
+          </p>
+        </div>
+
+        <div class="dossier-card">
+          <span class="dossier-index">SEC_04</span>
+          <h3 class="dossier-title">V8 Garbage Collector & Leaks</h3>
+          <p class="dossier-text">
+            Control de detached nodes, reciclaje de arrays de partículas en $O(1)$ sin generar recolecciones forzadas, y cancelación explícita del loop con <code>cancelAnimationFrame</code> al pausar o destruir.
+          </p>
+        </div>
+      </footer>
+    </section>
+
+  </main>
+
+  <!-- Pie Institucional Sobrio con Identidad de Autor y Universidad -->
+  <footer class="system-footer">
+    <div class="footer-content">
+      <div class="footer-meta">
+        <span class="footer-author"><strong>Autor:</strong> José Pablo Osorio Mallqui</span>
+        <span class="footer-separator">•</span>
+        <a href="https://github.com/StoneFind22" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub: @StoneFind22</a>
+      </div>
+      <div class="footer-academic">
+        <span>Universidad Nacional del Centro del Perú (UNCP)</span>
+        <span class="footer-separator">•</span>
+        <span>Facultad de Ingeniería de Sistemas (FIS)</span>
+        <span class="footer-separator">•</span>
+        <span>IS093A — Sem 04</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
