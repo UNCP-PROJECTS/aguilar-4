@@ -1,0 +1,825 @@
+/* ==========================================================================
+   UNCP FIS — GUÍA PRÁCTICA SEMANA 04
+   SISTEMA DE DISEÑO DE INSTRUMENTO TÉCNICO (DREAMDESIGN WORKBENCH)
+   Directivas: Cero clichés de IA, cero glows de neón, precisión tipográfica,
+   paleta calibrada de ingeniería, contraste estricto WCAG 2.2 AA / AAA.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. TOKENS DE INGENIERÍA Y VARIABLES CSS (:root)
+   -------------------------------------------------------------------------- */
+:root {
+  /* Paleta Técnica - Tema Oscuro (Modo Laboratorio por defecto) */
+  --bg-primary: #0a0d14;
+  --bg-secondary: #10141e;
+  --bg-surface: #171d2b;
+  --bg-surface-hover: #1f2738;
+  --bg-canvas-backdrop: #06090e;
+
+  --border-subtle: #202838;
+  --border-strong: #323e54;
+  --border-focus: #3b82f6;
+
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-inverse: #0a0d14;
+
+  /* Calibración de Color de Instrumentación */
+  --color-brand: #3b82f6;          /* Azul técnico de calibración */
+  --color-brand-hover: #2563eb;
+  --color-brand-subtle: rgba(59, 130, 246, 0.12);
+  --color-success: #10b981;        /* Verde operativo */
+  --color-success-subtle: rgba(16, 185, 129, 0.12);
+  --color-warning: #f59e0b;        /* Ámbar de precaución */
+  --color-warning-subtle: rgba(245, 158, 11, 0.12);
+  --color-danger: #ef4444;         /* Rojo de alerta crítica */
+  --color-danger-subtle: rgba(239, 68, 68, 0.12);
+
+  /* Tipografía */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Radios Geométricos Limpios (Sin píldoras cartoonish) */
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Elevaciones de Instrumento: Bordes nítidos de 1px sin sombras difusas */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-panel: 0 2px 8px rgba(0, 0, 0, 0.45);
+
+  /* Transiciones mecánicas breves */
+  --transition-fast: 120ms ease-out;
+  --transition-normal: 200ms ease-out;
+
+  /* Parámetros de render del lienzo */
+  --particle-trail: rgba(6, 9, 14, 0.28);
+}
+
+/* Tema Claro de Ingeniería (Modo Papel Técnico / Iluminación Natural) */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-surface: #f1f5f9;
+  --bg-surface-hover: #e2e8f0;
+  --bg-canvas-backdrop: #ffffff;
+
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-focus: #1d4ed8;
+
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #94a3b8;
+  --text-inverse: #f8fafc;
+
+  --color-brand: #1d4ed8;
+  --color-brand-hover: #1e40af;
+  --color-brand-subtle: rgba(29, 78, 216, 0.08);
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-panel: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  --particle-trail: rgba(255, 255, 255, 0.32);
+}
+
+/* --------------------------------------------------------------------------
+   2. RESET Y FUNDAMENTOS TIPOGRÁFICOS
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* --------------------------------------------------------------------------
+   3. BARRA DE CABECERA (HEADER INSTITUCIONAL SOBRIO)
+   -------------------------------------------------------------------------- */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.65rem 1.5rem;
+}
+
+.nav-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-symbol {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-brand);
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.brand-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.version-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-brand);
+  background: var(--color-brand-subtle);
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-subtle);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+/* Créditos de Autoria (Monograma & GitHub) */
+.author-credits {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.65rem 0.25rem 0.35rem;
+  text-decoration: none;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.author-credits:hover {
+  border-color: var(--color-brand);
+  background: var(--bg-surface-hover);
+}
+
+.monogram-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-brand);
+}
+
+.author-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.author-github-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.author-external-icon {
+  color: var(--text-dim);
+  transition: color var(--transition-fast);
+}
+
+.author-credits:hover .author-external-icon,
+.author-credits:hover .author-github-tag {
+  color: var(--color-brand);
+}
+
+/* Indicador de Estado del Motor */
+.status-indicator-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.status-pip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+
+.status-indicator-wrap.is-paused .status-pip {
+  background: var(--color-warning);
+}
+
+.status-label {
+  color: var(--text-main);
+}
+
+/* --------------------------------------------------------------------------
+   4. LAYOUT DE BANCO DE PRUEBAS (WORKBENCH GRID)
+   -------------------------------------------------------------------------- */
+.workbench-layout {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .workbench-layout {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+}
+
+.panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+}
+
+/* --------------------------------------------------------------------------
+   5. RACK DE PARÁMETROS Y CONTROLES (PANEL IZQUIERDO)
+   -------------------------------------------------------------------------- */
+.controls-panel {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.panel-header {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.65rem;
+}
+
+.panel-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.panel-subtitle {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.controls-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.control-group {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.group-legend {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 0 0.4rem;
+  letter-spacing: 0.05em;
+}
+
+/* Campos de Parámetros */
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.field-header label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.value-display {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-brand);
+  background: var(--bg-surface);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.input-range-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.range-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border-strong);
+  border-radius: var(--radius-xs);
+  outline: none;
+  cursor: pointer;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-xs);
+  background: var(--color-brand);
+  cursor: pointer;
+  border: 1px solid var(--bg-secondary);
+  transition: background-color var(--transition-fast);
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+  background: var(--color-brand-hover);
+}
+
+.number-input {
+  width: 66px;
+  height: 32px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  padding: 0.2rem 0.4rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--transition-fast);
+}
+
+.number-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
+
+.number-input.has-error {
+  border-color: var(--color-danger);
+  background: var(--color-danger-subtle);
+}
+
+.field-hint {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.field-error {
+  font-size: 0.72rem;
+  color: var(--color-danger);
+  font-weight: 500;
+  display: none;
+}
+
+.field-error.is-visible {
+  display: block;
+}
+
+/* Interruptores Mecánicos (Toggles de Precisión) */
+.toggle-field {
+  padding: 0.15rem 0;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch {
+  width: 36px;
+  height: 20px;
+  background: var(--border-strong);
+  border-radius: var(--radius-xs);
+  position: relative;
+  transition: background-color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 2px;
+  transition: transform var(--transition-fast);
+}
+
+.toggle-checkbox:checked + .toggle-switch {
+  background: var(--color-brand);
+}
+
+.toggle-checkbox:checked + .toggle-switch::after {
+  transform: translateX(16px);
+}
+
+.toggle-checkbox:focus-visible + .toggle-switch {
+  outline: 2px solid var(--border-focus);
+}
+
+.toggle-text {
+  font-size: 0.8rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+/* Botones de Acción de Instrumento */
+.actions-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 44px; /* WCAG 2.2 AA: Área táctil accesible */
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-icon-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: var(--color-brand);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--color-brand-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border-color: var(--border-strong);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--text-muted);
+}
+
+.btn-tech {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px dashed var(--border-strong);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.btn-tech:hover {
+  background: var(--bg-surface);
+  color: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+/* --------------------------------------------------------------------------
+   6. PANEL DE LIENZO Y TELEMETRÍA (PANEL DERECHO)
+   -------------------------------------------------------------------------- */
+.stage-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+/* Rack de Telemetría (Estilo Hardware Monitor / V8 Metrics) */
+.telemetry-rack {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.5rem;
+}
+
+.telemetry-cell {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 0.55rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cell-label {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.cell-data {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.cell-sub {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+#fpsCard .cell-data {
+  color: var(--color-success);
+}
+
+#fpsCard.is-warning .cell-data {
+  color: var(--color-warning);
+}
+
+#fpsCard.is-critical .cell-data {
+  color: var(--color-danger);
+}
+
+/* Viewport de Canvas con Retículas de Medición de Laboratorio */
+.canvas-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 420px;
+  background: var(--bg-canvas-backdrop);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+/* Retículas de Esquina (Corner Reticles - Instrumental Óptico) */
+.viewport-reticle-tl,
+.viewport-reticle-br {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.viewport-reticle-tl {
+  top: 8px;
+  left: 8px;
+  border-top: 1px solid var(--border-strong);
+  border-left: 1px solid var(--border-strong);
+}
+
+.viewport-reticle-br {
+  bottom: 8px;
+  right: 8px;
+  border-bottom: 1px solid var(--border-strong);
+  border-right: 1px solid var(--border-strong);
+}
+
+.simulation-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+}
+
+/* Toast de Notificación Técnico */
+.toast-notification {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-strong);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  box-shadow: var(--shadow-sm);
+  transform: translateY(120%);
+  opacity: 0;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.toast-notification.is-active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   7. DOSSIER TÉCNICO Y ARQUITECTURA (PANEL INFERIOR)
+   -------------------------------------------------------------------------- */
+.tech-dossier {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.dossier-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dossier-index {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-brand);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.dossier-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.dossier-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.dossier-text code {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  padding: 0.1rem 0.3rem;
+  border-radius: 2px;
+  border: 1px solid var(--border-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   8. FOOTER INSTITUCIONAL
+   -------------------------------------------------------------------------- */
+.system-footer {
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  padding: 0.85rem 1.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
+
+.footer-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.footer-meta,
+.footer-academic {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.footer-author {
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.footer-separator {
+  color: var(--border-strong);
+}
+
+.footer-link {
+  color: var(--color-brand);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+  color: var(--color-brand-hover);
+}
+
+/* Accesibilidad: Reducción de Movimiento (WCAG 2.2 AA) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
